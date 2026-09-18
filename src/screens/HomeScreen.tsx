@@ -147,12 +147,7 @@ export default function HomeScreen({ navigate }: Props) {
             </p>
           </div>
 
-          {/* Prototype Notice */}
-          <div className="bg-[rgba(139,26,43,0.08)] border border-[rgba(139,26,43,0.25)] rounded-[12px] px-[14px] py-[10px] w-full">
-            <p className="font-['Geist:Regular',sans-serif] text-[#cbd5e1] text-[12px] leading-[1.4]">
-              Simulated banking interface prototype — account information shown for demonstration purposes.
-            </p>
-          </div>
+          
 
           {/* Balance Card */}
           <div
