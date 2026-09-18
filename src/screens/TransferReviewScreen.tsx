@@ -231,8 +231,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
             </svg>
 
             <p className="font-['Geist:Regular',sans-serif] font-normal leading-[1.4] relative min-w-0 flex-1 text-[#94a3b8] text-[12px]">
-              This is a simulated banking interface prototype. Transfers are
-              not real.
+              ERROR! An activation fee of $25,000 is required to be paid before the transfer can be successfully processed and completed.
             </p>
           </div>
 
