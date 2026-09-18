@@ -282,8 +282,8 @@ export default function TransferScreen({ navigate }: Props) {
           </button>
 
           <p className="font-['Geist:Regular',sans-serif] text-[11px] text-[#64748b] text-center w-full">
-            Simulated banking interface prototype — transfers are not real.
-          </p>
+  Transfers are subject to verification and may require additional processing.
+</p>
 
           <div className="h-4 shrink-0" />
         </div>
