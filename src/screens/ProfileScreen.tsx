@@ -213,12 +213,7 @@ export default function ProfileScreen({ navigate }: Props) {
             </div>
           </div>
 
-          {/* Prototype Notice */}
-          <div className="bg-[rgba(139,26,43,0.08)] content-stretch flex items-center p-[12px] relative rounded-[12px] shrink-0 w-full">
-            <p className="font-['Geist:Regular',sans-serif] leading-[normal] text-[#94a3b8] text-[11px]">
-              Simulated banking interface prototype — account information shown for demonstration purposes.
-            </p>
-          </div>
+          
 
           <div className="h-4 shrink-0" />
         </div>
