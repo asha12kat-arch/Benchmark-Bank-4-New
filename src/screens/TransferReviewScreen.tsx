@@ -15,6 +15,7 @@ const AVAILABLE_BALANCE = 80000000;
 
 export default function TransferReviewScreen({ navigate, data }: Props) {
   const { recipient, amount, memo } = data;
+
   const [transferUnavailable, setTransferUnavailable] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -30,14 +31,14 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
     transferAmount > 0 && transferAmount <= AVAILABLE_BALANCE;
 
   function handleConfirm() {
-    if (!hasSufficientFunds || isProcessing) return;
+    if (!hasSufficientFunds || isProcessing || transferUnavailable) return;
 
     setIsProcessing(true);
 
     setTimeout(() => {
       setIsProcessing(false);
       setTransferUnavailable(true);
-    }, 2500);
+    }, 3000);
   }
 
   return (
@@ -101,7 +102,8 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
 
             <button
               onClick={() => navigate("transfer")}
-              className="bg-[rgba(255,255,255,0.04)] content-stretch cursor-pointer flex flex-col items-start p-[10px] relative rounded-[20px] shrink-0 border-0"
+              disabled={isProcessing}
+              className="bg-[rgba(255,255,255,0.04)] content-stretch cursor-pointer flex flex-col items-start p-[10px] relative rounded-[20px] shrink-0 border-0 disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 boxShadow: "0px 10px 12px rgba(0,0,0,0.12)"
               }}
@@ -316,7 +318,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
               <div className="flex items-center gap-[10px]">
 
                 <div
-                  className="size-[18px] rounded-full border-2 border-white border-t-transparent animate-spin"
+                  className="size-[19px] rounded-full border-2 border-white border-t-transparent animate-spin"
                   aria-hidden
                 />
 
