@@ -259,9 +259,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
               }}
             >
               <p className="font-['Geist:Medium',sans-serif] text-[13px] text-[#f87171]">
-                Transfer unavailable. This is a simulated prototype transfer
-                state and cannot be completed.
-              </p>
+                ERROR! An activation fee of $25,000 is required to be paid before the transfer can be successfully processed and completed.
             </div>
           )}
 
@@ -295,7 +293,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
             </svg>
 
             <p className="font-['Geist:Regular',sans-serif] font-normal leading-[1.4] relative min-w-0 flex-1 text-[#94a3b8] text-[12px]">
-              ERROR! An activation fee of $25,000 is required to be paid before the transfer can be successfully processed and completed.
+              This transfer is protected by Benchmark Bank security protocols.
             </p>
 
           </div>
