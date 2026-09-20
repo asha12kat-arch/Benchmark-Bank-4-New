@@ -433,11 +433,6 @@ export default function TransferScreen({ navigate }: Props) {
             )}
           </button>
 
-          <p className="font-['Geist:Regular',sans-serif] text-[11px] text-[#64748b] text-center w-full">
-            This is a simulated banking interface prototype. Transfers are not
-            real.
-          </p>
-
           <div className="h-4 shrink-0" />
         </div>
       </div>
