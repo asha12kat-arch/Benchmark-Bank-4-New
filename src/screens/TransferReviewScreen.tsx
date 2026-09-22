@@ -1,5 +1,4 @@
 import { useState } from "react";
-import BottomNav from "./BottomNav";
 
 interface TransferData {
   recipient: { id: string; name: string; initials: string; account: string };
@@ -9,63 +8,30 @@ interface TransferData {
 
 interface Props {
   navigate: (screen: string, data?: unknown) => void;
+  data: TransferData;
 }
-
-const RECIPIENTS = [
-  { id: "1", name: "Sarah Johnson", initials: "SJ", account: "•••• 2341" },
-  { id: "2", name: "David Chen", initials: "DC", account: "•••• 8820" },
-  { id: "3", name: "Emily Rodriguez", initials: "ER", account: "•••• 5514" },
-  { id: "4", name: "Marcus Taylor", initials: "MT", account: "•••• 9901" },
-];
 
 const AVAILABLE_BALANCE = 80000000;
 
-export default function TransferScreen({ navigate }: Props) {
-  const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState("");
-  const [memo, setMemo] = useState("");
-  const [selectedRecipient, setSelectedRecipient] = useState<
-    (typeof RECIPIENTS)[0] | null
-  >(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+export default function TransferReviewScreen({ navigate, data }: Props) {
+  const { recipient, amount, memo } = data;
+  const [transferUnavailable, setTransferUnavailable] = useState(false);
+  const fee = "0.00";
+  const transferAmount = Number(amount);
+  const total = Number.isFinite(transferAmount)
+    ? transferAmount.toFixed(2)
+    : "0.00";
 
-  const enteredAmount = Number(amount);
+  const hasSufficientFunds =
+    transferAmount > 0 && transferAmount <= AVAILABLE_BALANCE;
 
-  const exceedsAvailableBalance =
-    Number.isFinite(enteredAmount) &&
-    enteredAmount > AVAILABLE_BALANCE;
-
-  function handleContinue() {
-    if (
-      !selectedRecipient ||
-      !amount ||
-      exceedsAvailableBalance ||
-      isProcessing
-    ) {
-      return;
-    }
-
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      setIsProcessing(false);
-
-      navigate("transfer-review", {
-        recipient: selectedRecipient,
-        amount,
-        memo,
-      });
-    }, 2500);
+  function handleConfirm() {
+    if (hasSufficientFunds) setTransferUnavailable(true);
   }
-
-  const canContinue =
-    selectedRecipient !== null &&
-    amount.trim() !== "" &&
-    enteredAmount > 0 &&
-    !exceedsAvailableBalance;
 
   return (
     <div className="bg-gradient-to-b content-stretch flex flex-col from-[#0a1628] items-start relative size-full to-[#07111f] overflow-hidden">
+      {/* bg glow */}
       <div className="absolute right-[-120px] size-[320px] top-[-120px] pointer-events-none">
         <div className="absolute inset-[-34.38%]">
           <svg
@@ -75,7 +41,7 @@ export default function TransferScreen({ navigate }: Props) {
             viewBox="0 0 540 540"
             width="540"
           >
-            <g filter="url(#tg1)" opacity="0.12">
+            <g filter="url(#trg1)" opacity="0.12">
               <circle
                 cx="270"
                 cy="270"
@@ -83,13 +49,12 @@ export default function TransferScreen({ navigate }: Props) {
                 r="160"
               />
             </g>
-
             <defs>
               <filter
                 colorInterpolationFilters="sRGB"
                 filterUnits="userSpaceOnUse"
                 height="540"
-                id="tg1"
+                id="trg1"
                 width="540"
                 x="0"
                 y="0"
@@ -98,14 +63,12 @@ export default function TransferScreen({ navigate }: Props) {
                   floodOpacity="0"
                   result="BackgroundImageFix"
                 />
-
                 <feBlend
                   in="SourceGraphic"
                   in2="BackgroundImageFix"
                   mode="normal"
                   result="shape"
                 />
-
                 <feGaussianBlur
                   result="effect1"
                   stdDeviation="55"
@@ -120,218 +83,79 @@ export default function TransferScreen({ navigate }: Props) {
         <div className="content-stretch flex flex-col gap-[20px] items-start p-[16px] relative w-full">
 
           {/* Header */}
-          <div className="content-stretch flex items-center justify-between py-[12px] relative shrink-0 w-full">
-            <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
-              <div className="bg-[#8b1a2b] relative rounded-[10px] shrink-0 size-[32px]" />
-
-              <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[18px] text-white">
-                Benchmark
-              </p>
-            </div>
-          </div>
-
-          {/* Title */}
-          <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
-            <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[24px] text-white">
-              Send Money
-            </p>
-
-            <p className="font-['Geist:Regular',sans-serif] font-normal relative shrink-0 text-[#94a3b8] text-[14px]">
-              Transfer funds to your recipients
-            </p>
-          </div>
-
-          {/* From Account */}
-          <div
-            className="bg-[#0b1524] content-stretch flex flex-col gap-[12px] items-start p-[16px] relative rounded-[20px] shrink-0 w-full"
-            style={{
-              boxShadow:
-                "0px 10px 24px 0px rgba(139,26,43,0.12), 0px 18px 40px 0px rgba(0,0,0,0.2)",
-            }}
-          >
-            <div
-              aria-hidden
-              className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[20px]"
-            />
-
-            <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#94a3b8] text-[12px] uppercase tracking-[0.24px]">
-              From Account
-            </p>
-
-            <div className="content-stretch flex items-center gap-[12px] relative shrink-0 w-full">
-              <div className="bg-[rgba(139,26,43,0.08)] content-stretch flex flex-col items-center justify-center relative rounded-[16px] shrink-0 size-[44px]">
-                <div
-                  aria-hidden
-                  className="absolute border border-[rgba(139,26,43,0.2)] border-solid inset-0 pointer-events-none rounded-[16px]"
-                />
-
-                <svg
-                  className="block size-[20px]"
-                  fill="none"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  width="20"
-                >
-                  <rect
-                    height="14"
-                    rx="2"
-                    stroke="#8B1A2B"
-                    strokeWidth="2"
-                    width="16"
-                    x="2"
-                    y="5"
-                  />
-
-                  <path
-                    d="M2 9h16"
-                    stroke="#8B1A2B"
-                    strokeWidth="2"
-                  />
-                </svg>
-              </div>
-
-              <div className="content-stretch flex flex-col gap-[2px] items-start relative shrink-0">
-                <p className="font-['Geist:SemiBold',sans-serif] font-semibold relative shrink-0 text-[15px] text-white">
-                  Winnings
-                </p>
-
-                <p className="font-['Geist:Regular',sans-serif] font-normal relative shrink-0 text-[#94a3b8] text-[13px] whitespace-nowrap">
-                  Available: $80,000,000.00
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Recipients */}
-          <div
-            className="bg-[#0b1524] content-stretch flex flex-col gap-[12px] items-start p-[16px] relative rounded-[20px] shrink-0 w-full"
-            style={{
-              boxShadow:
-                "0px 10px 24px 0px rgba(139,26,43,0.12), 0px 18px 40px 0px rgba(0,0,0,0.2)",
-            }}
-          >
-            <div
-              aria-hidden
-              className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[20px]"
-            />
-
-            <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#94a3b8] text-[12px] uppercase tracking-[0.24px]">
-              Select Recipient
-            </p>
-
-            {/* Search */}
-            <div className="bg-[rgba(255,255,255,0.04)] content-stretch flex h-[44px] items-center gap-[10px] px-[14px] relative rounded-[14px] shrink-0 w-full">
+          <div className="content-stretch flex items-center gap-[12px] py-[12px] relative shrink-0 w-full">
+            <button
+              onClick={() => navigate("transfer")}
+              className="bg-[rgba(255,255,255,0.04)] content-stretch cursor-pointer flex flex-col items-start p-[10px] relative rounded-[20px] shrink-0 border-0"
+              style={{
+                boxShadow: "0px 10px 12px rgba(0,0,0,0.12)",
+              }}
+            >
               <div
                 aria-hidden
-                className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[14px]"
+                className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[20px]"
               />
-
               <svg
-                className="shrink-0"
                 fill="none"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
+                height="20"
+                viewBox="0 0 20 20"
+                width="20"
               >
-                <circle
-                  cx="7"
-                  cy="7"
-                  r="5"
-                  stroke="#94A3B8"
-                  strokeWidth="1.5"
-                />
-
                 <path
-                  d="M11 11L14 14"
-                  stroke="#94A3B8"
+                  d="M12.5 15L7.5 10L12.5 5"
+                  stroke="white"
                   strokeLinecap="round"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                 />
               </svg>
+            </button>
 
-              <input
-                type="text"
-                placeholder="Search recipient..."
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                disabled={isProcessing}
-                className="flex-1 bg-transparent border-0 outline-none font-['Geist:Regular',sans-serif] text-[14px] text-white placeholder:text-[#94a3b8] disabled:opacity-50"
-              />
-            </div>
+            <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[20px] text-white">
+              Review Transfer
+            </p>
+          </div>
 
-            {/* Recipient list */}
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-              {RECIPIENTS
-                .filter((r) =>
-                  r.name.toLowerCase().includes(recipient.toLowerCase())
-                )
-                .map((r) => (
-                  <button
-                    key={r.id}
-                    onClick={() =>
-                      setSelectedRecipient(
-                        r.id === selectedRecipient?.id ? null : r
-                      )
-                    }
-                    disabled={isProcessing}
-                    className="content-stretch flex items-center gap-[12px] p-[12px] relative rounded-[14px] shrink-0 w-full border-0 cursor-pointer text-left transition-all disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{
-                      background:
-                        selectedRecipient?.id === r.id
-                          ? "rgba(139,26,43,0.08)"
-                          : "rgba(255,255,255,0.02)",
+          {/* Amount Hero */}
+          <div
+            className="bg-[#0b1524] content-stretch flex flex-col gap-[8px] items-center p-[24px] relative rounded-[20px] shrink-0 w-full"
+            style={{
+              boxShadow:
+                "0px 10px 24px 0px rgba(139,26,43,0.12), 0px 18px 40px 0px rgba(0,0,0,0.2)",
+            }}
+          >
+            <div
+              aria-hidden
+              className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[20px]"
+            />
 
-                      boxShadow:
-                        selectedRecipient?.id === r.id
-                          ? "inset 0 0 0 1px rgba(139,26,43,0.3)"
-                          : "inset 0 0 0 1px rgba(255,255,255,0.06)",
-                    }}
-                  >
-                    <div
-                      className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center relative rounded-[14px] shrink-0 size-[40px]"
-                      style={{
-                        boxShadow:
-                          "inset 0 0 0 1px rgba(255,255,255,0.08)",
-                      }}
-                    >
-                      <span className="font-['Geist:SemiBold',sans-serif] text-[13px] text-white">
-                        {r.initials}
-                      </span>
-                    </div>
+            <p className="font-['Geist:Regular',sans-serif] font-normal relative shrink-0 text-[#94a3b8] text-[14px]">
+              You are sending
+            </p>
 
-                    <div className="content-stretch flex flex-col gap-[2px] items-start relative flex-1 min-w-0">
-                      <p className="font-['Geist:SemiBold',sans-serif] font-semibold relative shrink-0 text-[14px] text-white">
-                        {r.name}
-                      </p>
+            <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[44px] text-white">
+              ${total}
+            </p>
 
-                      <p className="font-['Geist:Regular',sans-serif] font-normal relative shrink-0 text-[#94a3b8] text-[12px]">
-                        {r.account}
-                      </p>
-                    </div>
+            <div className="content-stretch flex items-center gap-[8px] relative shrink-0">
+              <div
+                className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center relative rounded-[10px] shrink-0 size-[32px]"
+                style={{
+                  boxShadow:
+                    "inset 0 0 0 1px rgba(255,255,255,0.08)",
+                }}
+              >
+                <span className="font-['Geist:SemiBold',sans-serif] text-[11px] text-white">
+                  {recipient.initials}
+                </span>
+              </div>
 
-                    {selectedRecipient?.id === r.id && (
-                      <div className="bg-[#8b1a2b] flex items-center justify-center relative rounded-full shrink-0 size-[20px]">
-                        <svg
-                          fill="none"
-                          height="12"
-                          viewBox="0 0 12 12"
-                          width="12"
-                        >
-                          <path
-                            d="M2 6L5 9L10 3"
-                            stroke="white"
-                            strokeLinecap="round"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                ))}
+              <p className="font-['Geist:SemiBold',sans-serif] font-semibold relative shrink-0 text-[15px] text-white">
+                to {recipient.name}
+              </p>
             </div>
           </div>
 
-          {/* Amount */}
+          {/* Transfer Details */}
           <div
             className="bg-[#0b1524] content-stretch flex flex-col gap-[12px] items-start p-[16px] relative rounded-[20px] shrink-0 w-full"
             style={{
@@ -344,100 +168,144 @@ export default function TransferScreen({ navigate }: Props) {
               className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[20px]"
             />
 
-            <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#94a3b8] text-[12px] uppercase tracking-[0.24px]">
-              Amount
+            <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[15px] text-white">
+              Transfer Details
             </p>
 
-            <div className="bg-[rgba(255,255,255,0.04)] content-stretch flex h-[56px] items-center gap-[8px] px-[16px] relative rounded-[14px] shrink-0 w-full">
+            <div className="h-px relative shrink-0 w-full bg-[rgba(255,255,255,0.12)]" />
+
+            {[
+              { label: "From", value: "Winnings" },
+              {
+                label: "To",
+                value: `${recipient.name} (${recipient.account})`,
+              },
+              { label: "Amount", value: `$${total}` },
+              { label: "Fee", value: `$${fee}` },
+              { label: "Memo", value: memo || "—" },
+            ].map(({ label, value }) => (
               <div
-                aria-hidden
-                className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[14px]"
-              />
-
-              <p className="font-['Young_Serif:Regular',sans-serif] text-[22px] text-[#8b1a2b]">
-                $
-              </p>
-
-              <input
-                type="number"
-                min="0"
-                max={AVAILABLE_BALANCE}
-                step="0.01"
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={isProcessing}
-                className="flex-1 bg-transparent border-0 outline-none font-['Young_Serif:Regular',sans-serif] text-[22px] text-white placeholder:text-[rgba(255,255,255,0.2)] disabled:opacity-50"
-              />
-            </div>
-
-            {exceedsAvailableBalance && (
-              <p
-                role="alert"
-                className="font-['Geist:Medium',sans-serif] text-[13px] text-[#f87171]"
+                key={label}
+                className="content-stretch flex items-center justify-between relative shrink-0 w-full"
               >
-                Insufficient funds. Enter an amount no greater than
-                $80,000,000.00.
+                <p className="font-['Geist:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#94a3b8] text-[13px]">
+                  {label}
+                </p>
+
+                <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[13px] text-white">
+                  {value}
+                </p>
+              </div>
+            ))}
+
+            <div className="h-px relative shrink-0 w-full bg-[rgba(255,255,255,0.12)]" />
+
+            <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
+              <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-white text-[14px]">
+                Total Deducted
               </p>
-            )}
 
-            {/* Memo */}
-            <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#94a3b8] text-[12px] uppercase tracking-[0.24px]">
-              Memo (optional)
-            </p>
-
-            <div className="bg-[rgba(255,255,255,0.04)] content-stretch flex h-[44px] items-center px-[16px] relative rounded-[14px] shrink-0 w-full">
-              <div
-                aria-hidden
-                className="absolute border border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none rounded-[14px]"
-              />
-
-              <input
-                type="text"
-                placeholder="What is this for?"
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                disabled={isProcessing}
-                className="flex-1 bg-transparent border-0 outline-none font-['Geist:Regular',sans-serif] text-[14px] text-white placeholder:text-[#94a3b8] disabled:opacity-50"
-              />
+              <p className="font-['Young_Serif:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[18px] text-[#8b1a2b]">
+                ${total}
+              </p>
             </div>
           </div>
 
-          {/* Transfer Now Button */}
+          {/* Insufficient Funds */}
+          {!hasSufficientFunds && (
+            <div
+              role="alert"
+              className="bg-[rgba(248,113,113,0.08)] p-[14px] relative rounded-[14px] shrink-0 w-full"
+              style={{
+                border: "1px solid rgba(248,113,113,0.3)",
+              }}
+            >
+              <p className="font-['Geist:Medium',sans-serif] text-[13px] text-[#f87171]">
+                Insufficient funds. This transfer exceeds the
+                $80,000,000.00 available balance and cannot be completed.
+              </p>
+            </div>
+          )}
+
+          {/* Simulated Activation State */}
+          {transferUnavailable && (
+            <div
+              role="alert"
+              className="bg-[rgba(248,113,113,0.08)] p-[14px] relative rounded-[14px] shrink-0 w-full"
+              style={{
+                border: "1px solid rgba(248,113,113,0.3)",
+              }}
+            >
+              <p className="font-['Geist:Medium',sans-serif] text-[13px] text-[#f87171]">
+                SIMULATED PROTOTYPE: This transfer is currently unavailable
+                because a $25,000 activation state has been configured for
+                this demonstration.
+              </p>
+            </div>
+          )}
+
+          {/* Security Notice */}
+          <div className="bg-[rgba(139,26,43,0.06)] content-stretch flex items-center gap-[10px] p-[14px] relative rounded-[14px] shrink-0 w-full">
+            <div
+              aria-hidden
+              className="absolute border border-[rgba(139,26,43,0.15)] border-solid inset-0 pointer-events-none rounded-[14px]"
+            />
+
+            <svg
+              fill="none"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+              className="shrink-0"
+            >
+              <path
+                d="M8 2L13 4.5V8C13 11 10.5 13.5 8 14C5.5 13.5 3 11 3 8V4.5L8 2Z"
+                stroke="#8B1A2B"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M6 8L7.5 9.5L10 7"
+                stroke="#8B1A2B"
+                strokeLinecap="round"
+                strokeWidth="1.5"
+              />
+            </svg>
+
+            <p className="font-['Geist:Regular',sans-serif] font-normal leading-[1.4] relative min-w-0 flex-1 text-[#94a3b8] text-[12px]">
+              This transfer is protected by Benchmark Bank security
+              protocols.
+            </p>
+          </div>
+
+          {/* Confirm Button */}
           <button
-            onClick={handleContinue}
-            disabled={!canContinue || isProcessing}
-            className="content-stretch flex h-[52px] items-center justify-center relative rounded-[14px] shrink-0 w-full border-0 cursor-pointer transition-all disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={handleConfirm}
+            disabled={!hasSufficientFunds || transferUnavailable}
+            className="bg-[#8b1a2b] content-stretch flex h-[52px] items-center justify-center relative rounded-[14px] shrink-0 w-full border-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
             style={{
-              background: canContinue ? "#8b1a2b" : "rgba(139,26,43,0.3)",
-              boxShadow: canContinue
-                ? "0px 10px 12px rgba(139,26,43,0.2)"
-                : "none",
+              boxShadow: "0px 10px 12px rgba(139,26,43,0.2)",
             }}
           >
-            {isProcessing ? (
-              <div className="flex items-center justify-center gap-[10px]">
-                <div
-                  className="size-[19px] rounded-full border-2 border-white border-t-transparent animate-spin"
-                  aria-hidden
-                />
+            <p className="font-['Geist:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[16px] text-white">
+              {transferUnavailable
+                ? "Transfer unavailable"
+                : "Confirm Transfer"}
+            </p>
+          </button>
 
-                <p className="font-['Geist:Bold',sans-serif] font-bold leading-[normal] text-[16px] text-white">
-                  Processing...
-                </p>
-              </div>
-            ) : (
-              <p className="font-['Geist:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[16px] text-white">
-                Transfer Now
-              </p>
-            )}
+          {/* Cancel Button */}
+          <button
+            onClick={() => navigate("transfer")}
+            className="bg-transparent content-stretch flex h-[52px] items-center justify-center relative rounded-[14px] shrink-0 w-full border-[1.5px] border-[rgba(255,255,255,0.12)] border-solid cursor-pointer"
+          >
+            <p className="font-['Geist:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#94a3b8] text-[16px]">
+              Cancel
+            </p>
           </button>
 
           <div className="h-4 shrink-0" />
         </div>
       </div>
-
-      <BottomNav active="transfer" navigate={navigate} />
     </div>
   );
 }
