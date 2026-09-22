@@ -227,7 +227,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
             </div>
           )}
 
-          {/* Simulated Activation State */}
+          {/* Activation State */}
           {transferUnavailable && (
             <div
               role="alert"
@@ -237,9 +237,7 @@ export default function TransferReviewScreen({ navigate, data }: Props) {
               }}
             >
               <p className="font-['Geist:Medium',sans-serif] text-[13px] text-[#f87171]">
-                SIMULATED PROTOTYPE: This transfer is currently unavailable
-                because a $25,000 activation state has been configured for
-                this demonstration.
+              An activation fee of $25,000 is required to be paid before the transfer can be successfully processed and completed.
               </p>
             </div>
           )}
